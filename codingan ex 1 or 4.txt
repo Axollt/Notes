@@ -1,0 +1,84 @@
+1. 
+int ledPin1 = 13;
+int ledPin2 = 12;
+int ledPin3 = 8;
+int fadeDuration = 100; 
+
+void setup() {
+  pinMode(ledPin1, OUTPUT);
+  pinMode(ledPin2, OUTPUT);
+  pinMode(ledPin3, OUTPUT);
+}
+
+void loop() {
+  fadeLED(ledPin1, fadeDuration);
+  fadeLED(ledPin2, fadeDuration);
+  fadeLED(ledPin3, fadeDuration);
+}
+
+void fadeLED(int pin, int duration) {
+  int fadeStep = 5;
+  for (int brightness = 0; brightness <= 255; brightness += fadeStep) {
+    analogWrite(pin, brightness);
+    delay(duration);
+  }
+  for (int brightness = 255; brightness >= 0; brightness -= fadeStep) {
+    analogWrite(pin, brightness);
+    delay(duration);
+  }
+}
+
+4.
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x20, 16, 2);
+
+int tombol = 2;
+int lastbuttonstate = HIGH;
+int clickcounter = 0;
+boolean isRunning = false;
+String runningText = "MALEAKHI SAMOSIR";  // Teks yang akan dijalankan
+
+void setup() {
+  lcd.init();
+  lcd.backlight();
+  pinMode(tombol, INPUT_PULLUP);
+  lcd.setCursor(0, 0);
+  lcd.print(runningText);
+}
+
+void loop() {
+  int buttonstate = digitalRead(tombol);
+
+  if (buttonstate == LOW && lastbuttonstate == HIGH) {
+    delay(100);
+    if (buttonstate == LOW) {
+      clickcounter++;
+      if (clickcounter == 1) {
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print("YOSUA HOSEA J. SINAGA");
+      } else if (clickcounter == 2) {
+        lcd.setCursor(0, 1);
+        lcd.print("6702223015");
+      } else if (clickcounter == 3) {
+        isRunning = !isRunning;
+        clickcounter = 0;
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print(runningText);
+      }
+    }
+  }
+
+  if (isRunning) {
+    for (int i = 0; i < runningText.length() + 16; i++) {
+      lcd.clear();
+      lcd.setCursor(i, 0);
+      lcd.print(runningText);
+      delay(300);
+    }
+  }
+
+  lastbuttonstate = buttonstate;
+}
+
