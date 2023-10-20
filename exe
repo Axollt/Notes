@@ -1,0 +1,352 @@
+//no01
+// C++ code
+//
+int LED1=8;
+int LED2=9;
+int LED3=10;
+void setup()
+{
+  pinMode(LED1, OUTPUT);
+    pinMode(LED2, OUTPUT);
+    pinMode(LED3, OUTPUT);
+}
+
+void loop()
+{
+  digitalWrite(LED1, HIGH);
+  delay(1000); // Wait for 1000 millisecond(s)
+  digitalWrite(LED1, LOW);
+  delay(500); // Wait for 1000 millisecond(s)
+  
+  digitalWrite(LED2, HIGH);
+  delay(1000); // Wait for 1000 millisecond(s)
+  digitalWrite(LED2, LOW);
+  delay(500); // Wait for 1000 millisecond(s)
+  
+  digitalWrite(LED3, HIGH);
+  delay(1000); // Wait for 1000 millisecond(s)
+  digitalWrite(LED3, LOW);
+  delay(500); // Wait for 1000 millisecond(s)
+}
+
+//02
+
+
+const int potentiometerPin = A0; // Pin untuk potensiometer
+const int ledPins[] = {8, 9, 10, 11}; // Pin untuk LED
+int potValue = 0; // Nilai potensiometer
+
+void setup() {
+  for (int i = 0; i < 4; i++) {
+    pinMode(ledPins[i], OUTPUT);
+  }
+}
+
+void loop() {
+  potValue = analogRead(potentiometerPin);
+
+  if (potValue >= 0 && potValue < 200) {
+    turnOnLed(0);
+  } else if (potValue >= 200 && potValue < 400) {
+    turnOnLed(0);
+    turnOnLed(1);
+  } else if (potValue >= 400 && potValue < 600) {
+    turnOnLed(0);
+    turnOnLed(1);
+    turnOnLed(2);
+  } else if (potValue >= 600) {
+    turnOnLed(0);
+    turnOnLed(1);
+    turnOnLed(2);
+    turnOnLed(3);
+  }
+}
+
+void turnOnLed(int ledIndex) {
+  for (int i = 0; i < 4; i++) {
+    if (i == ledIndex) {
+      digitalWrite(ledPins[i], HIGH);
+    } else {
+      digitalWrite(ledPins[i], LOW);
+    }
+  }
+}
+
+//003
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(32,16,2);
+
+int led1 = 9;
+int led2 = 10;
+int led3 = 11;
+int led4 = 8;
+int pot = A0;
+int but1 = 3;
+int MODE = 0;
+
+void setup(){
+  pinMode (led1, OUTPUT);
+  pinMode (led2, OUTPUT);
+  pinMode (led3, OUTPUT);
+  pinMode (pot, INPUT);
+  pinMode (but1, INPUT);
+  Serial.begin(9600);
+  lcd.begin(16,2);
+  lcd.init();
+  lcd.backlight();
+  lcd.init();
+}
+
+void loop() {
+
+  int pus = digitalRead(but1);
+ 
+  if (pus == LOW){
+    MODE++;
+    delay(2000);
+  }
+  
+  if (MODE == 1){
+    lcd.setCursor(0, 0);
+    lcd.print("6702223011");
+  }
+  else if (MODE == 2) {
+    lcd.setCursor(0, 1);
+    lcd.print("maleahi samosir");
+  }
+
+//4
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(32,16,2);
+
+int led1 = 9;
+int led2 = 10;
+int led3 = 11;
+int led4 = 8;
+int pot = A0;
+int but1 = 3;
+int MODE = 0;
+
+void setup(){
+  pinMode (led1, OUTPUT);
+  pinMode (led2, OUTPUT);
+  pinMode (led3, OUTPUT);
+  pinMode (pot, INPUT);
+  pinMode (but1, INPUT);
+  Serial.begin(9600);
+  lcd.begin(16,2);
+  lcd.init();
+  lcd.backlight();
+  lcd.init();
+}
+
+void loop() {
+
+  int pus = digitalRead(but1);
+ 
+  if (pus == LOW){
+    MODE++;
+    delay(2000);
+  }
+  
+  if (MODE == 1){
+    lcd.setCursor(0, 0);
+    lcd.print("6702223011");
+  }
+  else if (MODE == 2) {
+    lcd.setCursor(0, 1);
+    lcd.print("Afif Syam F);
+  }
+  else if (MODE == 3) {
+    for (int i = 0; i <= 38; i++){
+    lcd.scrollDisplayLeft();
+    }
+  }
+    else if (MODE == 4){
+    	lcd.clear();
+    }
+}
+
+//5
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(32,16,2);
+
+int led1 = 9;
+int led2 = 10;
+int led3 = 11;
+int led4 = 8;
+int pot = A0;
+int but1 = 3;
+int MODE = 0;
+
+void setup(){
+  pinMode (led1, OUTPUT);
+  pinMode (led2, OUTPUT);
+  pinMode (led3, OUTPUT);
+  pinMode (pot, INPUT);
+  pinMode (but1, INPUT);
+  Serial.begin(9600);
+  lcd.begin(16,2);
+  lcd.init();
+  lcd.backlight();
+  lcd.init();
+}
+
+void loop() {
+
+  int pus = digitalRead(but1);
+ 
+  if (pus == LOW){
+    MODE++;
+    delay(2000);
+  }
+  
+  if (MODE == 1){
+    lcd.setCursor(0, 0);
+    lcd.print("6702220116");
+  }
+  else if (MODE == 2) {
+    lcd.setCursor(0, 1);
+    lcd.print("M akmal");
+  }
+  else if (MODE == 3) {
+    for (int i = 0; i <= 38; i++){
+    lcd.scrollDisplayLeft();
+    }
+  }
+    else if (MODE == 4){
+    	lcd.clear();
+    }
+  else if (MODE == 5){
+  	lcd.setCursor(0, 0);
+    lcd.print("6702223011");
+  	lcd.setCursor(0, 1);
+    lcd.print("Afif Syam F");
+   	MODE = 0;
+}
+}
+//
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(32,16,2);
+
+int photo = A1;
+int but1 = 3;
+int MODE = 0;
+int buz = 12;
+
+void setup(){
+  pinMode (photo, INPUT);
+  pinMode (buz, OUTPUT);
+  Serial.begin(9600);
+  lcd.begin(16,2);
+  lcd.init();
+  lcd.backlight();
+  lcd.init();
+}
+
+void loop() {
+
+  	int li = analogRead(photo);
+  	Serial.print("Pht");
+  	Serial.println(li);
+  
+  if (li >= 20){
+    digitalWrite(buz, HIGH);
+    lcd.setCursor(0, 0);
+    lcd.print("LIGHT ON");
+  }
+  else {
+    digitalWrite(buz, LOW);
+    lcd.setCursor(0, 0);
+    lcd.print("LIGHT OFF");
+  }
+  
+}
+
+
+
+//SIXB
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(32,16,2);
+
+
+int photo = A1;
+int but1 = 7;
+int MODE = 0;
+int buz = 10;
+
+void setup(){
+  pinMode (but1, INPUT);
+  pinMode (photo, INPUT);
+  pinMode (buz, OUTPUT);
+  Serial.begin(9600);
+  lcd.begin(16,2);
+  lcd.init();
+  lcd.backlight();
+  lcd.init();
+}
+
+void loop() {
+
+  	int li = analogRead(photo);
+  	Serial.print("Pht");
+  	Serial.println(li);
+  
+  if (li >= 20){
+    digitalWrite(buz, HIGH);
+    lcd.setCursor(0, 0);
+    lcd.print("LIGHT ON");
+  }
+  else {
+    digitalWrite(buz, LOW);
+    lcd.setCursor(0, 0);
+    lcd.print("LIGHT OFF");
+  }
+  
+}
+
+
+
+
+
+
+
+//SIXA
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(32,16,2);
+
+
+int ldr = A0;
+int but1 = 7;
+int MODE = 0;
+int buz = 10;
+
+void setup(){
+  pinMode (but1, INPUT);
+  pinMode (ldr, INPUT);
+  pinMode (buz, OUTPUT);
+  Serial.begin(9600);
+  lcd.begin(16,2);
+  lcd.init();
+  lcd.backlight();
+  lcd.init();
+}
+
+void loop() {
+
+  	int li = analogRead(ldr);
+  	Serial.print("ldr");
+  	Serial.println(li);
+  
+  if (li >= 60){
+    digitalWrite(buz, HIGH);
+    lcd.setCursor(0, 0);
+    lcd.print("LIGHT ON");
+  }
+  else {
+    digitalWrite(buz, LOW);
+    lcd.setCursor(0, 0);
+    lcd.print("LIGHT OFF");
+  }
+  
+}
