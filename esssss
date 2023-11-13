@@ -1,0 +1,465 @@
+//photoB
+
+
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(32,16,2);
+
+
+String XO = "X  O  O  X  X";
+String XO2 = "  X O X  O  O"; 
+int photodiode = A0;
+bool posisi = 0;
+int butats = 6;
+int butbwh = 7;
+int buzzrp = 4;
+char kar = '<';
+bool state = false;
+char masuk;
+int score = 3;
+
+
+void setup()
+{
+  pinMode(butats, INPUT);
+  pinMode(butbwh, INPUT);
+  pinMode(buzzrp, OUTPUT);
+  pinMode(photodiode, INPUT);
+  Serial.begin(9600);
+  lcd.begin(16,2);
+  lcd.init();	
+  lcd.backlight();
+  menu();
+}
+
+void loop()
+{
+  while (Serial.available() > 0){
+    char in = Serial.read();
+  	if (in == 'y' || in == 'Y'){
+      	score = 3;
+    	state = true;
+    }
+    if (in == 'b' || in == 'B'){
+      	score = 3;
+    	menu();
+    }
+  }
+  a:
+ if (state == true){
+  for (int i = 0; i <= 15; i++){
+ 	int durasi = analogRead(photodiode);
+ 	Serial.print("jarak : ");
+  	Serial.println(durasi);
+    
+    lcd.clear();
+    lcd.setCursor(0,1);
+    lcd.print(score);
+    Serial.print("Skor kamu = ");
+    Serial.print(score);
+    Serial.print(" ");
+  	lcd.setCursor(i,0);
+    lcd.print(XO);
+    lcd.setCursor(i,1);
+    lcd.print(XO2);
+
+  	control();
+    lcd.setCursor(15, posisi);
+    lcd.print(kar);    
+    delay(durasi);
+    
+	    if (posisi == 0 && (i == 3 || i == 6 || i == 15))
+        {
+          tone(buzzrp, 220, 100);
+          score--;
+        }
+    
+    	if (posisi == 0 && (i == 9 || i == 12))
+        {
+          tone(buzzrp, 320, 100);
+    	  score++;
+    	}
+    
+    	if (posisi == 1 && (i == 9 || i == 13))
+        {
+          tone(buzzrp, 220, 100);
+          score--;
+        }
+    
+       	if (posisi == 1 && (i == 3 || i == 6 || i == 11))
+        {
+          tone(buzzrp, 320, 100);
+    	  score++;
+    	}
+    
+   		if (score == 0)
+        {
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.print("GAMEOVER!!");
+          lcd.setCursor(0,1);
+          lcd.print("hasil = ");  
+          lcd.setCursor(10,1);
+          lcd.print(score);
+          state = false;
+          Serial.println("life score : ");
+          Serial.println(score);
+
+      	  goto a;
+         }
+    
+        if (i == 15)
+        {
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.print("GAMEOVER!!");
+          lcd.setCursor(0,1);
+          lcd.print("hasil = ");
+          lcd.setCursor(10,1);
+          lcd.print(score); 
+          Serial.println("life score : ");
+          Serial.println(score);
+
+          state = false;
+      	  goto a;
+        }      
+    }
+  }
+}
+
+void control()
+{
+  	int push = digitalRead(butats);
+    int push1 = digitalRead(butbwh);
+	if (push == LOW){
+    	posisi = 0;
+  	}
+  	if (push1 == LOW){
+    	posisi = 1;
+  	}    
+}
+
+void menu (){
+  lcd.clear();
+  lcd.setCursor(2,0);
+  lcd.print("Maleakhi");
+  lcd.setCursor(3,1);
+  lcd.print("6702220012");
+  Serial.println("Your score : ");
+  Serial.println(score);
+}
+
+
+
+
+
+
+
+//UltraA
+
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(32,16,2);
+
+const int trigPin = 10;
+const int echoPin = 9;
+bool n = 0;
+int but1 = 7;
+int but2 = 6;
+String obs = "X  O  O  X  X"; // 3 6 9 12 15
+String obs1 = "  X O X  O  O"; // 3 6 9 11 13
+int buz = 3;
+char player = '<';
+bool sate = false;
+char in;
+int score = 3;
+
+
+void setup()
+{
+  pinMode(but1, INPUT);
+  pinMode(but2, INPUT);
+  pinMode(buz, OUTPUT);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  Serial.begin(9600);
+  lcd.begin(16,2);
+  lcd.init();	
+  lcd.backlight();
+  menu();
+}
+
+void loop()
+{
+  while (Serial.available() > 0){
+    char in = Serial.read();
+  	if (in == 'c' || in == 'C'){
+      	score = 3;
+    	sate = true;
+    }
+    if (in == 'b' || in == 'B'){
+      	score = 3;
+    	menu();
+    }
+  }
+  a:
+ if (sate == true){
+  for (int i = 0; i <= 15; i++){
+	long duration, inches, cm;
+	digitalWrite(trigPin, LOW);
+	delayMicroseconds(2);
+	digitalWrite(trigPin, HIGH);
+	delayMicroseconds(10);
+	digitalWrite(trigPin, LOW);
+	duration = pulseIn(echoPin, HIGH);
+	inches = microsecondsToInches(duration);
+	cm = microsecondsToCentimeters(duration);
+	cm = map(cm, 10, 300, 100, 1000); //atur kecepatan game
+  Serial.print("jarak : ");
+  Serial.println(cm);
+    lcd.clear();
+    lcd.setCursor(0,1);
+    lcd.print(score);
+  	lcd.setCursor(i,0);
+    lcd.print(obs);
+    lcd.setCursor(i,1);
+    lcd.print(obs1);
+
+  	control();
+    lcd.setCursor(15,n);
+    lcd.print(player);    
+    delay(cm);
+    
+	    if (n == 0 && (i == 3 || i == 6 || i == 15)){
+          digitalWrite(buz, HIGH);
+          delay(100);
+          digitalWrite(buz, LOW);
+          score--;
+        }
+    	if (n == 0 && (i == 9 || i == 12)){
+          	digitalWrite(buz, HIGH);
+          	delay(100);
+          	digitalWrite(buz, LOW);
+    		score++;
+    	}
+    	if (n == 1 && (i == 9 || i == 13)){
+          digitalWrite(buz, HIGH);
+          delay(100);
+          digitalWrite(buz, LOW);
+          score--;
+        }
+       	if (n == 1 && (i == 3 || i == 6 || i == 11)){
+          	digitalWrite(buz, HIGH);
+          	delay(100);
+          	digitalWrite(buz, LOW);
+    		score++;
+    	}
+   		if (score == 0){
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.print("Kalah Skor:");
+          lcd.setCursor(0,14);
+          lcd.print(score);
+          lcd.setCursor(0,1);
+          lcd.print("c: Ulang b: Kembali");          
+          sate = false;
+      	  goto a;
+         }
+        if (i == 15){
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.print("Kalah Skor:");
+          lcd.setCursor(0,14);
+          lcd.print(score);
+          lcd.setCursor(0,1);
+          lcd.print("c: ulang b: kembali");          
+          sate = false;
+      	  goto a;
+        }
+
+        
+    
+  }
+}
+}
+
+void control(){
+  	int push = digitalRead(but1);
+    int push1 = digitalRead(but2);
+	if (push == LOW){
+    	n = 0;
+  	}
+  	if (push1 == LOW){
+    	n = 1;
+  	}    
+}
+
+void menu (){
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Maleakhi");
+  lcd.setCursor(0,1);
+  lcd.print("6702220012");
+  lcd.setCursor(14,0);
+  lcd.print(score);
+}
+
+long microsecondsToInches(long microseconds)
+{
+ return microseconds / 74 / 2;
+}
+
+long microsecondsToCentimeters(long microseconds)
+{
+ return microseconds / 29 / 2;
+}
+
+
+//laeyos
+
+
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x20, 16, 2);
+LiquidCrystal_I2C lcd2(0x25, 16, 2);
+
+int pushButtonPin1 = 7;
+int pushButtonPin2 = 6;
+int BuzzerPin = 3;
+int photodiodaPin = A0;
+int counterLife = 3;
+char inChar;
+String State = "Inisialisasi";
+int durasi;
+String isiBarisAtas = "X  X   O   X  O ";
+String isiBarisBawah = "  O   X   O   X ";
+int posisiAwalPlayerTerhadapIndexString = 15;
+bool posisiPanahDiAtas = true;
+int score = 3;
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(pushButtonPin1, INPUT);
+  pinMode(pushButtonPin2, INPUT);
+  pinMode(BuzzerPin, OUTPUT);
+  pinMode(photodiodaPin, INPUT);
+  lcd.init();
+  lcd.backlight();
+  lcd.home();
+  lcd.setCursor(0, 0);
+  lcd.print("Maleakhi Samosir");
+  lcd.setCursor(0, 1);
+  lcd.print("6702220012");
+  lcd2.init();
+  lcd2.backlight();
+  lcd2.home();
+  lcd2.setCursor(0, 0);
+  lcd2.print("Life");
+  lcd2.setCursor(0, 1);
+  lcd2.print(counterLife);
+  delay(1000);
+}
+
+void loop() {
+  bacaSerial();
+  if (inChar == 'c') {
+    lcd.clear();
+    lcd2.setCursor(6, 0);
+    lcd2.print("START");
+    lcd2.setCursor(6, 1);
+    lcd2.print("Score:");
+    lcd2.setCursor(14, 1);
+    lcd2.print(score);
+
+    State = "MODE Permainan";
+  }
+  if (inChar == 'z') {
+    lcd.clear();
+
+    State = "GAMEOVER";
+  }
+  if (State == "MODE Permainan") {
+    int sensorValue = analogRead(photodiodaPin);
+    int stringValue = map(sensorValue, 0, 1023, 100, 500);
+    for (int i = 0; i <= 15; i++) {
+      digitalWrite(BuzzerPin, LOW); 
+      char karakterDiAtas = isiBarisAtas[posisiAwalPlayerTerhadapIndexString];
+      char karakterDiBawah = isiBarisBawah[posisiAwalPlayerTerhadapIndexString];
+
+      lcd.clear();
+      lcd.setCursor(i, 0);
+      lcd.print(isiBarisAtas);
+      lcd.setCursor(i, 1);
+      lcd.print(isiBarisBawah);
+
+      Serial.print("Isi Baris Atas: ");
+      Serial.println(karakterDiAtas);
+      Serial.print("Isi Baris Bawah: ");
+      Serial.println(karakterDiBawah);
+      Serial.println(durasi);
+
+      if (digitalRead(pushButtonPin1) == LOW) {
+        posisiPanahDiAtas = true;  
+      }
+
+      if (digitalRead(pushButtonPin2) == LOW) {
+        posisiPanahDiAtas = false; 
+      }
+      if (posisiPanahDiAtas) {
+        lcd.setCursor(15, 0);
+        lcd.print("<");
+        if (karakterDiAtas == 'O') {
+          score++;
+          tone(BuzzerPin, 220, 100);  
+          lcd2.setCursor(14, 1);
+          lcd2.print(score);
+        } else if (karakterDiAtas == 'X') {
+          score--;
+          tone(BuzzerPin, 400, 100);  
+          lcd2.setCursor(14, 1);
+          lcd2.print(score);
+        }
+      }
+      if (!posisiPanahDiAtas) {
+        lcd.setCursor(15, 1);
+        lcd.print("<");
+        Serial.println(karakterDiBawah);
+        Serial.println(posisiAwalPlayerTerhadapIndexString);
+        if (karakterDiBawah == 'O') {
+          score++;
+          tone(BuzzerPin, 220, 100); 
+          lcd2.setCursor(14, 1);
+          lcd2.print(score);
+        } else if (karakterDiBawah == 'X') {
+          score--;
+          tone(BuzzerPin, 400, 100); 
+          lcd2.setCursor(14, 1);
+          lcd2.print(score);
+        }
+      }
+      if (i == 15 || score == 0) {
+        lcd.clear();
+        lcd.print("GAME OVER!!!");
+        i = 15;
+        State = "GAMEOVER";
+        inChar = ' ';
+      }
+
+      posisiAwalPlayerTerhadapIndexString--;
+      delay(stringValue);
+    }
+  }
+  if (State == "GAMEOVER") {
+    lcd2.setCursor(6, 0);
+    lcd2.print("GAMEOVER");
+  }
+}
+
+void bacaSerial() {
+  while (Serial.available() > 0) {
+    inChar = (char)Serial.read();
+    Serial.print("Terima data: ");
+    Serial.println(inChar);
+  }
+}
+
+
+
+
