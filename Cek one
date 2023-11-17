@@ -1,0 +1,181 @@
+// C++ code
+//
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd1(0x27, 16, 2);
+// LiquidCrystal_I2C lcd2(33, 16, 2);
+
+int pushButtonPin1 = 2;
+int pushButtonPin2 = 4;
+int BuzzerPin = 3;
+int photodiodaPin = A0;
+int counterLife = 3;
+char inChar;
+String State = "Inisialisasi";
+int durasi;
+String isiBarisAtas = "O  X   O   X  X ";
+String isiBarisBawah = "  O   O   X   O ";
+int posisiAwalPlayerTerhadapIndexString = 15;
+bool posisiPanahDiAtas = true;
+int score = 3;
+const int trigPin = 9;
+const int echoPin = 10;
+
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(pushButtonPin1, INPUT);
+  pinMode(pushButtonPin2, INPUT);
+  pinMode(BuzzerPin, OUTPUT);
+  pinMode(photodiodaPin, INPUT);
+  pinMode(trigPin, OUTPUT);  //Mengatur trigPin sebagai output
+  pinMode(echoPin, INPUT);   //Mengatur echoPin sebagai input
+
+  lcd1.init();
+  lcd1.backlight();
+  lcd1.home();
+  lcd1.setCursor(0, 0);
+  lcd1.print("Hafidz");
+  lcd1.setCursor(0, 1);
+  lcd1.print("6702223010");
+
+  // lcd2.init();
+  // lcd2.backlight();
+  // lcd2.home();
+  // lcd2.setCursor(0, 0);
+  Serial.print("Life");
+  Serial.print(counterLife);
+  delay(1000);
+}
+
+void loop() {
+  bacaSerial();
+  long duration, inches, cm;
+  if (inChar == 'c') {
+    // lcd1.clear();
+    // lcd2.setCursor(6, 0);
+    Serial.println("START");
+    // lcd2.setCursor(6, 1);
+    Serial.println("Score:");
+    // lcd2.setCursor(14, 1);
+    Serial.println(score);
+
+    State = "MODE Permainan";
+  }
+  if (inChar == 'z') {
+    lcd1.clear();
+
+    State = "GAMEOVER";
+  }
+  if (State == "MODE Permainan") {
+    durasi = analogRead(photodiodaPin);
+    //Serial.println(durasi);
+    for (int i = 0; i <= 15; i++) {
+      // Pin trigPin clear
+      digitalWrite(trigPin, LOW);
+      delayMicroseconds(2);
+      // Atur trigPin pada kondisi HIGH selama 10 microseconds
+      digitalWrite(trigPin, HIGH);
+      delayMicroseconds(10);
+      digitalWrite(trigPin, LOW);
+      //Membaca echoPin, mengembalikan gelombang suara dalam   satuan microseconds
+      duration = pulseIn(echoPin, HIGH);
+      digitalWrite(BuzzerPin, LOW);  //Supaya buzzer tidak berbunyi sepanjang permainan
+      //Untuk menentukan index karakter ketika permainan berlangsung
+      char karakterDiAtas = isiBarisAtas[posisiAwalPlayerTerhadapIndexString];
+      char karakterDiBawah = isiBarisBawah[posisiAwalPlayerTerhadapIndexString];
+
+      lcd1.clear();
+      lcd1.setCursor(i, 0);
+      lcd1.print(isiBarisAtas);
+      lcd1.setCursor(i, 1);
+      lcd1.print(isiBarisBawah);
+
+      Serial.print("Isi Baris Atas: ");
+      Serial.println(karakterDiAtas);
+      Serial.print("Isi Baris Bawah: ");
+      Serial.println(karakterDiBawah);
+
+      if (digitalRead(pushButtonPin2) == LOW) {
+        posisiPanahDiAtas = false;  //Memindahkan tanda "<" ke baris atas LCD
+      }
+      if (digitalRead(pushButtonPin1) == LOW) {
+        posisiPanahDiAtas = true;  //Memindahkan tanda "<" ke baris bawah LCD
+      }
+
+      Serial.println(posisiPanahDiAtas);
+
+      if (!posisiPanahDiAtas) {
+        lcd1.setCursor(15, 1);
+        lcd1.print("<");
+        Serial.println(karakterDiBawah);
+        Serial.println(posisiAwalPlayerTerhadapIndexString);
+        if (karakterDiBawah == 'X') {
+          score--;
+          //Serial.println("ATAS-----O");
+          // digitalWrite(buzzer,HIGH); //kalau menggunakan hardware pakai ini
+          tone(BuzzerPin, 220, 100);  //Untuk simulator pakai ini
+          Serial.print(score);
+        } else if (karakterDiBawah == 'O') {
+          score++;
+          //Serial.println("ATAS-----X");
+          // digitalWrite(buzzer,HIGH); //kalau menggunakan hardware pakai ini
+          tone(BuzzerPin, 400, 100);  //Untuk simulator pakai ini
+          // lcd2.setCursor(14, 1);
+          Serial.print(score);
+        }
+      }
+
+      if (posisiPanahDiAtas) {
+        lcd1.setCursor(15, 0);
+        lcd1.print("<");
+        if (karakterDiAtas == 'X') {
+          score--;
+          //Serial.println("ATAS-----O");
+          // digitalWrite(buzzer,HIGH); //kalau menggunakan hardware pakai ini
+          tone(BuzzerPin, 220, 100);  //Untuk simulator pakai ini
+          // lcd2.setCursor(14, 1);
+          Serial.print(score);
+        } else if (karakterDiAtas == 'O') {
+          score++;
+          //Serial.println("ATAS-----X");
+          // digitalWrite(buzzer,HIGH); //kalau menggunakan hardware pakai ini
+          tone(BuzzerPin, 400, 100);  //Untuk simulator pakai ini
+          // lcd2.setCursor(14, 1);
+          Serial.print(score);
+        }
+      }
+
+      if (i == 15 || score == 0) {
+        lcd1.clear();
+        lcd1.print("GAME OVER!!!");
+        i = 15;
+        State = "GAMEOVER";
+        inChar = ' ';
+      }
+
+      posisiAwalPlayerTerhadapIndexString--;
+      delay(duration);
+    }
+    if (State == "GAMEOVER") {
+      // lcd2.setCursor(6, 0);
+      Serial.print("GAMEOVER");
+    }
+  }
+}
+void bacaSerial() {
+  while (Serial.available() > 0) {
+    inChar = (char)Serial.read();
+    Serial.print("Terima data: ");
+    Serial.println(inChar);
+  }
+}
+
+//fungsi untuk menghitung jarak dalam satuan inch
+long microsecondsToInches(long microseconds) {
+  return microseconds / 74 / 2;
+}
+
+// fungsi untuk menghitung jarak dalam satuan cm
+long microsecondsToCentimeters(long microseconds) {
+  return microseconds / 29 / 2;
+}
